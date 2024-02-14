@@ -1,43 +1,50 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
-import 'main.dart';
-import 'package:flutter/material.dart';
-import 'package:nutrifit/Search_Category_Detail_screen.dart';
-import 'package:http/http.dart' as http;
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:nutrifit/main.dart';
+
+void main(item) {
   runApp(MaterialApp(
-    home: SearchPage(),
+    home: DetailScreen(word: item),
   ));
 }
 
-class SearchPage extends StatelessWidget {
-  final List<String> words = ['m-burger', 'c-burger', 'p-burger', 'l-burger'];
+class DetailScreen extends StatelessWidget {
+  final String word;
+
+  DetailScreen({required this.word});
+
+  final List<String> items = ['apple', 'banana', 'orange', 'grape'];
 
   @override
   Widget build(BuildContext context) {
-    return SearchScreen(words: words);
+    return DetailPage(words: items, word: word);
   }
 }
 
-class SearchScreen extends StatefulWidget {
+class DetailPage extends StatefulWidget {
   final List<String> words;
+  final String word;
 
-  SearchScreen({required this.words});
+  DetailPage({required this.words, required this.word});
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  _DetailPageState createState() => _DetailPageState(word: word);
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _DetailPageState extends State<DetailPage> {
   TextEditingController _searchController = TextEditingController();
   List<String>? _matchingWords;
   List<dynamic>? data;
   TextEditingController _consumedAmountController = TextEditingController();
   double totalAmount = 100.0;
+  final String word;
 
   Timer? _searchTimer;
+
+  _DetailPageState({required this.word});
 
   Future<void> search(String food_name, String group) async {
     final String url =
@@ -70,9 +77,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // 새로운 타이머 시작
     _searchTimer = Timer(Duration(milliseconds: 500), () {
-      print(query);
+      print(word);
       // 500ms 후에 search 함수 호출
-      search(query, '');
+      search(query, word);
     });
   }
 
@@ -97,11 +104,11 @@ class _SearchScreenState extends State<SearchScreen> {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     });
+
     if (response_post.statusCode != 200) {
-      print('update 실패!${response_post.statusCode}');
+      print('추가하기 성공!');
     } else {
-      print('update 성공!');
-      print(jsonString);
+      print('추가하기 실패 ${response_post.statusCode}');
     }
   }
 
@@ -115,16 +122,16 @@ class _SearchScreenState extends State<SearchScreen> {
       //   'NutriFit',
       //   style: TextStyle(fontSize: 30),
       // ))),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _searchController,
-              decoration: InputDecoration(labelText: 'Search'),
-              onChanged: (query) async {
+              decoration: InputDecoration(labelText: '${word} 검색'),
+              onChanged: (query) {
                 _searchWords(query);
-                setState(() {});
               },
             ),
             Expanded(
@@ -136,21 +143,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         return ListTile(
                           title: Text(_matchingWords![index]),
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => DetailScreen(
-                            //       word: _matchingWords![index],
-                            //     ),
-                            //   ),
-                            // );
-
                             _showDetailDialog(data![index]);
                           },
                         );
                       },
                     )
-                  : _buildGridBoxes(),
+                  : Center(
+                      child: Text(''),
+                      // Text('Detail for $word'),
+                    ),
             ),
           ],
         ),
@@ -179,7 +180,6 @@ class _SearchScreenState extends State<SearchScreen> {
     totalAmount = once;
     _consumedAmountController = TextEditingController(text: '${totalAmount}');
 
-    // searchdata['once'] -> '1회 제공량';
     // searchdata['food_name'] -> '음식 이름';
     // searchdata['energy_kcal'] -> '칼로리';
     // searchdata['water_g'] -> '수분';
@@ -242,26 +242,20 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: data.map((data) {
-                              if (data['value'][0] != -1) {
-                                return Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      16.0, 8.0, 8.0, 2.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('${data['label']}'),
-                                      Text(
-                                          '${(data['value'][0] * (totalAmount / once)).toStringAsFixed(2)}'
-                                          ' ${data['value'][1]}')
-                                    ],
-                                  ),
-                                );
-                              } else {
-                                return SizedBox(
-                                  height: 0,
-                                );
-                              }
+                              return Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    16.0, 8.0, 8.0, 2.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('${data['label']}'),
+                                    Text(
+                                        '${(data['value'][0] * (totalAmount / once)).toStringAsFixed(2)}'
+                                        ' ${data['value'][1]}')
+                                  ],
+                                ),
+                              );
                             }).toList())), //영양 성분 정보
                     SizedBox(
                       height: 14,
@@ -407,110 +401,4 @@ class _SearchScreenState extends State<SearchScreen> {
       },
     );
   }
-
-  Widget _buildGridBoxes() {
-    const items = ['농축산물', '수산물', '가공식품', '음식'];
-    return GridView.builder(
-      shrinkWrap: true,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-      ),
-      padding: EdgeInsets.all(24.0),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            print(items[index]);
-            _navigateToDetailScreen(items[index]);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.orange,
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            padding: EdgeInsets.all(16.0),
-            child: Center(
-              child: Text(items[index]),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // Widget _buildColoredBox(String word) {
-  //   return Container(
-  //     margin: EdgeInsets.all(15),
-  //     width: 131,
-  //     height: 103,
-  //     color: Colors.amber,
-  //     child: TextButton(
-  //       onPressed: () {
-  //         filterWords(word);
-  //       },
-  //       child: Text(word),
-  //     ),
-  //   );
-  // }
-
-  void _navigateToDetailScreen(String selectedWord) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DetailScreen(
-          word: selectedWord,
-        ),
-      ),
-    );
-  }
-
-  void filterWords(String keyword) {
-    setState(() {
-      _matchingWords =
-          widget.words.where((word) => word.contains(keyword)).toList();
-    });
-    // Navigate to detail page with filteredWords
-  }
 }
-
-// class DetailScreen extends StatelessWidget {
-//   final String word;
-
-//   DetailScreen({required this.word});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Center(
-//           child: Text(
-//             'NutriFit',
-//             style: TextStyle(fontSize: 30),
-//           ),
-//         ),
-//       ),
-//       body: Center(
-//         child: Text('Detail for $word'),
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: const <BottomNavigationBarItem>[
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.manage_search),
-//             label: 'search',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.home),
-//             label: 'home',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.person),
-//             label: 'my page',
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
