@@ -33,6 +33,10 @@ class _RecommendScreenState extends State<RecommendScreen> {
       body: body,
     );
     Map<String, dynamic> originalData = json.decode(response.body);
+    originalData['energy_kcal'] = tdee - originalData['energy_kcal'];
+    originalData['protein_g'] = (tdee / 4 * 0.14) - originalData['protein_g'];
+    originalData['fat_g'] = (tdee / 9 * 0.21) - originalData['fat_g'];
+    originalData['carbohydrate_g'] =(tdee / 4 * 0.65) - originalData['carbohydrate_g'];
     originalData["nutrifit_percent"] = [
       originalData['energy_kcal'] / (tdee),
       originalData['protein_g'] / (tdee / 4 * 0.14),
@@ -78,7 +82,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
       "todaysfood": (dataMap['todays'] == '' ? '' : dataMap['todays'] + '\\') +
-          '${searchdata['NO']}^${totalAmount}^${searchdata['food_name']}',
+          '${searchdata['NO']}^${totalAmount}^${searchdata['food_name']}^${searchdata['once']}',
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -118,9 +122,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
                   },
                 ),
               ),
-              body: Expanded(
-                child: _buildRecommendations(), //추천 음식 목록 함수
-              ),
+              body: _buildRecommendations(),
             );
           } else if (snapshot.hasError) {
             print(snapshot.error);

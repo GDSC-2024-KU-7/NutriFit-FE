@@ -278,24 +278,30 @@ class _DetailPageState extends State<DetailPage> {
                         child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: data.map((data) {
-                              return Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    16.0, 8.0, 8.0, 2.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('${data['label']}'),
-                                    Text(
-                                        '${(data['value'][0] * (totalAmount / once)).toStringAsFixed(2)}'
-                                        ' ${data['value'][1]}')
-                                  ],
-                                ),
-                              );
-                            }).toList())), //영양 성분 정보
+                              if (data['value'][0] != -1) {
+                                return Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      16.0, 8.0, 8.0, 2.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('${data['label']}'),
+                                      Text(
+                                          '${(data['value'][0] * (totalAmount / once)).toStringAsFixed(2)}'
+                                          ' ${data['value'][1]}')
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return SizedBox(
+                                  height: 0,
+                                );
+                              }
+                            }).toList())), //영양 성분 정보                    SizedBox(
                     SizedBox(
                       height: 14,
-                    ), //blank
+                    ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                       child: Container(
