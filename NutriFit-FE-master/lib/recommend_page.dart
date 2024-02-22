@@ -70,7 +70,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
     }
   }
 
-  Future<void> _add(searchdata, double totalAmount, double once) async {
+  Future<void> _add(context,searchdata, double totalAmount, double once) async {
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
@@ -95,6 +95,8 @@ class _RecommendScreenState extends State<RecommendScreen> {
       print('update 실패!${response_post.statusCode}');
     } else {
       print('update 성공!');
+      Navigator.pop(context);
+      dialog(context);
       print(jsonString);
     }
   }
@@ -142,7 +144,7 @@ class _RecommendScreenState extends State<RecommendScreen> {
   }
 
   Widget _buildRecommendations() {
-    return GridView.builder(
+    if(recommendationData.isNotEmpty){return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // 한 줄에 두 개의 항목을 표시
         crossAxisSpacing: 0.0, // 각 항목 사이의 가로 간격
@@ -177,9 +179,29 @@ class _RecommendScreenState extends State<RecommendScreen> {
           ),
         );
       },
-    );
+    );}else{
+      return Center(child: Text('추천 결과가 없습니다!'));
+    }
   }
-
+  void dialog(context){
+     showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('추가 완료!'),
+            actions: [
+              TextButton(
+                child: Text('닫기'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+  }
   void _showDetailDialog(searchdata) {
     double once = searchdata['once'].toDouble();
     totalAmount = once;
@@ -393,8 +415,8 @@ class _RecommendScreenState extends State<RecommendScreen> {
                                             _consumedAmountController.text) ??
                                         0.0;
                                   });
-                                  await _add(searchdata, totalAmount, once);
-                                  Navigator.pop(context);
+                                  await _add(context,searchdata, totalAmount, once);
+                                  
                                 },
                                 child: Text('추가하기',
                                     style: TextStyle(

@@ -39,6 +39,7 @@ class Loginpage extends StatelessWidget {
       // JWT 토큰을 저장, 홈페이지로 진입
     } else {
       // 로그인 실패 시
+      dialog(context);
       print('로그인 실패: ${response.reasonPhrase}');
     }
   }
@@ -93,6 +94,25 @@ class Loginpage extends StatelessWidget {
         ),
       ]),
     );
+  }
+  void dialog(context){
+     showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('아이디 또는 비밀번호가 올바르지 않습니다.'),
+            actions: [
+              TextButton(
+                child: Text('닫기'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
   }
 }
 

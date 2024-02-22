@@ -102,7 +102,6 @@ class _HomePageState extends State<HomePage> {
     final http.Response response = await http.post(Uri.parse(url),
         body: json.encode(data), headers: {"Content-Type": "application/json"});
     if (response.statusCode == 201) {
-      print(response.body);
       return response.body;
     } else {
       print('실패${response.reasonPhrase}');

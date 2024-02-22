@@ -90,6 +90,7 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> _add(
       //수정 mydata MyData
+      context,
       searchdata,
       double totalAmount,
       double once,
@@ -120,6 +121,8 @@ class _DetailPageState extends State<DetailPage> {
       print('추가하기 실패 ${response_post.statusCode}');
     } else {
       print('추가하기 성공!');
+      Navigator.pop(context);
+      dialog(context);
       print(jsonString);
     }
     myData.addData(
@@ -184,6 +187,13 @@ class _DetailPageState extends State<DetailPage> {
                       // Text('Detail for $word'),
                     ),
             ),
+            _matchingWords?.length != 0 ? SizedBox(height: 0,) : Column(
+              children: [
+                
+                Text('검색결과가 없습니다.'),
+                SizedBox(height: 150,),
+              ],
+            )
           ],
         ),
       ),
@@ -204,6 +214,25 @@ class _DetailPageState extends State<DetailPage> {
       //   ],
       // ),
     );
+  }
+  void dialog(context){
+     showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('추가 완료!'),
+            actions: [
+              TextButton(
+                child: Text('닫기'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
   }
 
   void _showDetailDialog(searchdata) {
@@ -423,9 +452,9 @@ class _DetailPageState extends State<DetailPage> {
                                             _consumedAmountController.text) ??
                                         0.0;
                                   });
-                                  _add(searchdata, totalAmount, once,
+                                  _add(context,searchdata, totalAmount, once,
                                       MyData()); //수정
-                                  Navigator.pop(context);
+                                  
                                 },
                                 child: Text('추가하기',
                                     style: TextStyle(
