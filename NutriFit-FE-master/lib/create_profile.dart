@@ -50,9 +50,11 @@ class _create_profileState extends State<create_profile> {
       print('update를 다시 시도해 주세요 ${response.statusCode}');
     } else {
       print('update 성공');
+
       if (navigator == 'tologin') {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Loginpage()));
+        _showAppDescriptionDialog(context);
       } else {
         Navigator.push(
             context,
@@ -63,6 +65,36 @@ class _create_profileState extends State<create_profile> {
       }
       //navigator > 로그인 창으로 이동
     }
+  }
+
+  void _showAppDescriptionDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('About \'Nutrifit\''),
+            content: Text('''
+‘Nutrifit’는 사용자가 영양소를 골고루 섭취할 수 있게 도와주는 건강 관리 앱입니다.
+              
+<사용방법>
+
+1.	회원가입 시 나이, 키, 체중 등의 기본 정보를 입력합니다.
+              
+2.	음식을 먹을 때마다 해당 음식을 검색창에서 찾고 추가합니다.
+              
+3.	개인의 정보로 계산된 영양 섭취 권장량 중 가장 적게 충족된 영양소를 기준으로 음식이 추천됩니다.
+              
+4.	추천된 음식 외에도 원하는 음식을 검색하여 원하는 음식에 대한 정보를 얻을 수 있습니다. 
+            '''),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Close'))
+            ],
+          );
+        });
   }
 
   Future _info() async {
