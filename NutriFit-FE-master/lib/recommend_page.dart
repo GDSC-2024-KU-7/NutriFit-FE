@@ -33,16 +33,17 @@ class _RecommendScreenState extends State<RecommendScreen> {
       body: body,
     );
     Map<String, dynamic> originalData = json.decode(response.body);
-    originalData['energy_kcal'] = tdee - originalData['energy_kcal'];
-    originalData['protein_g'] = (tdee / 4 * 0.14) - originalData['protein_g'];
-    originalData['fat_g'] = (tdee / 9 * 0.21) - originalData['fat_g'];
-    originalData['carbohydrate_g'] =(tdee / 4 * 0.65) - originalData['carbohydrate_g'];
     originalData["nutrifit_percent"] = [
       originalData['energy_kcal'] / (tdee),
       originalData['protein_g'] / (tdee / 4 * 0.14),
       originalData['fat_g'] / (tdee / 9 * 0.21),
       originalData['carbohydrate_g'] / (tdee / 4 * 0.65)
     ];
+    originalData['energy_kcal'] = tdee - originalData['energy_kcal'];
+    originalData['protein_g'] = (tdee / 4 * 0.14) - originalData['protein_g'];
+    originalData['fat_g'] = (tdee / 9 * 0.21) - originalData['fat_g'];
+    originalData['carbohydrate_g'] =(tdee / 4 * 0.65) - originalData['carbohydrate_g'];
+    
 
     String jsonString = jsonEncode(originalData);
     final String url_recommend =
