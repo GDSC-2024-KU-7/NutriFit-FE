@@ -226,7 +226,7 @@ class _SearchScreenState extends State<SearchScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('알림'),
-          content: Text('추가 완료!.'),
+          content: Text('추가 완료!'),
           actions: [
             TextButton(
               child: Text('닫기'),
