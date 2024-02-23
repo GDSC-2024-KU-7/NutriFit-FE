@@ -78,8 +78,8 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  Future<void> _add(context,
-      searchdata, double totalAmount, double once, MyData myData) async {
+  Future<void> _add(context, searchdata, double totalAmount, double once,
+      MyData myData) async {
     //수정
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
@@ -144,7 +144,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 setState(() {});
               },
             ),
-            
             Expanded(
               child: _matchingWords != null
                   ? ListView.builder(
@@ -187,13 +186,18 @@ class _SearchScreenState extends State<SearchScreen> {
                     )
                   : _buildGridBoxes(),
             ),
-            _matchingWords?.length != 0 ? SizedBox(height: 0,) : Column(
-              children: [
-                
-                Text('검색결과가 없습니다.'),
-                SizedBox(height: 150,),
-              ],
-            )
+            _matchingWords?.length != 0
+                ? SizedBox(
+                    height: 0,
+                  )
+                : Column(
+                    children: [
+                      Text('검색결과가 없습니다.'),
+                      SizedBox(
+                        height: 150,
+                      ),
+                    ],
+                  )
           ],
         ),
       ),
@@ -215,24 +219,25 @@ class _SearchScreenState extends State<SearchScreen> {
       // ),
     );
   }
-  void dialog(context){
-     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('알림'),
-            content: Text('추가 되었습니다.'),
-            actions: [
-              TextButton(
-                child: Text('닫기'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+
+  void dialog(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('알림'),
+          content: Text('추가 완료!.'),
+          actions: [
+            TextButton(
+              child: Text('닫기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showDetailDialog(searchdata) {
@@ -453,9 +458,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                             _consumedAmountController.text) ??
                                         0.0;
                                   });
-                                  await _add(context,searchdata, totalAmount, once,
-                                      MyData()); //수정
-                                  
+                                  await _add(context, searchdata, totalAmount,
+                                      once, MyData()); //수정
                                 },
                                 child: Text('추가하기',
                                     style: TextStyle(
